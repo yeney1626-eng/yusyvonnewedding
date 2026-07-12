@@ -388,11 +388,18 @@
       position:fixed; top:var(--header-h); left:0; right:0; bottom:0;
       background:var(--ivory); flex-direction:column; align-items:flex-start;
       padding:30px 28px; gap:22px;
-      transform:translateX(100%); transition:transform .3s ease;
+      transform:translateX(100%);
+      opacity:0; visibility:hidden; pointer-events:none;
+      transition:transform .3s ease, opacity .3s ease, visibility 0s linear .3s;
       overflow-y:auto;
       z-index:999;
     }
-    nav ul.open{transform:translateX(0);}
+    nav ul.open{
+      transform:translateX(0);
+      opacity:1; visibility:visible; pointer-events:auto;
+      transition:transform .3s ease, opacity .3s ease, visibility 0s linear 0s;
+    }
+    body.menu-open{overflow:hidden;}
     .burger{display:flex;}
     nav a{
       font-size:16px; padding:10px 4px; width:100%;
@@ -717,8 +724,21 @@
   // Mobile nav toggle
   const burgerBtn = document.getElementById('burgerBtn');
   const navList = document.getElementById('navList');
-  burgerBtn.addEventListener('click', () => navList.classList.toggle('open'));
-  navList.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navList.classList.remove('open')));
+  function setMenu(open){
+    navList.classList.toggle('open', open);
+    document.body.classList.toggle('menu-open', open);
+  }
+  burgerBtn.addEventListener('click', () => setMenu(!navList.classList.contains('open')));
+  navList.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+
+  // Always land on the Home/hero section on load, never mid-scroll or at the bottom
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.addEventListener('load', () => {
+    if (window.location.hash) {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    window.scrollTo(0, 0);
+  });
 
   // Countdown
   const weddingDate = new Date('2026-11-11T14:30:00+08:00').getTime();
@@ -778,13 +798,17 @@
     guestSelect.appendChild(notListed);
   }
 
-  async function loadGuestList(){
-    guestSelect.disabled = true;
-    guestSelect.innerHTML = '<option value="">Loading guest list…</option>';
+  async function loadGuestList(isSilentRefresh){
+    const previousValue = guestSelect.value;
+    if (!isSilentRefresh){
+      guestSelect.disabled = true;
+      guestSelect.innerHTML = '<option value="">Loading guest list…</option>';
+    }
     let guests = FALLBACK_GUESTS;
     if (WEBAPP_URL && !WEBAPP_URL.startsWith('PASTE_')){
       try{
         const res = await fetch(WEBAPP_URL + '?action=guests');
+        if (!res.ok) throw new Error('Guest list request failed: ' + res.status);
         const data = await res.json();
         if (Array.isArray(data.guests) && data.guests.length){
           guests = data.guests;
@@ -796,8 +820,14 @@
     guestSelect.innerHTML = '<option value="">Select from the guest list</option>';
     populateGuestDropdown(guests);
     guestSelect.disabled = false;
+    if (previousValue && [...guestSelect.options].some(o => o.value === previousValue)){
+      guestSelect.value = previousValue;
+      paxInput.value = guestSelect.options[guestSelect.selectedIndex].dataset.pax || '';
+    }
   }
   loadGuestList();
+  // Keep the guest list in sync with the sheet in case names/pax are edited there
+  setInterval(() => loadGuestList(true), 60000);
 
   guestSelect.addEventListener('change', function(){
     const selected = this.options[this.selectedIndex];
@@ -819,13 +849,20 @@
     const timestamp = now.toLocaleString('en-PH', { dateStyle:'long', timeStyle:'short' });
 
     // Send the response straight to the spreadsheet via Apps Script, if connected
+    let savedToSheet = false;
     if (WEBAPP_URL && !WEBAPP_URL.startsWith('PASTE_')){
       try{
-        await fetch(WEBAPP_URL, {
+        const res = await fetch(WEBAPP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ name, attendance, pax, contactNo, message })
         });
+        if (!res.ok) throw new Error('Web app responded with ' + res.status);
+        const result = await res.json().catch(() => null);
+        if (result && result.status === 'error') throw new Error(result.message || 'Sheet reported an error');
+        savedToSheet = true;
+        // Pull the guest list again so pax/attendance reflect the update we just made
+        loadGuestList(true);
       }catch(err){
         console.error('Could not send RSVP to the sheet automatically.', err);
       }
@@ -839,6 +876,12 @@ Contact No.: ${contactNo || '—'}
 Message: ${message || '—'}
 RSVP Recorded: ${timestamp}`;
 
+    const confirmHeading = rsvpConfirm.querySelector('p');
+    if (confirmHeading) {
+      confirmHeading.innerHTML = savedToSheet
+        ? '<strong>Thank you!</strong> Your RSVP has been saved to our tracking sheet.'
+        : '<strong>Thank you!</strong> We couldn\'t confirm the sheet received this automatically, so please also send it via SMS or copy the details below to Brien/Michelle.';
+    }
     document.getElementById('confirmTimestamp').innerHTML = `<strong>RSVP Backup Timestamp:</strong> ${timestamp}`;
     document.getElementById('confirmSummary').textContent = summary;
 
