@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: #fff;
+      color: #111;
+      display: flex;
+      justify-content: center;
+      padding: 48px 16px;
+    }
+    .card {
+      max-width: 460px;
+      width: 100%;
+      border: 1px solid #111;
+      padding: 40px 32px;
+      text-align: center;
+    }
+    .names {
+      font-size: 30px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .amp { font-style: italic; font-size: 24px; opacity: 0.7; }
+    .divider {
+      margin: 16px auto 20px;
+      width: 60px;
+      border-top: 1px solid #111;
+    }
+    .quote {
+      font-style: italic;
+      font-size: 14px;
+      color: #444;
+      margin: 0 0 28px;
+      line-height: 1.5;
+    }
+    section {
+      text-align: left;
+      margin-bottom: 30px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #ddd;
+    }
+    section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .section-title {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: center;
+      color: #111;
+      margin: 0 0 16px;
+    }
+    .story p {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #333;
+      margin: 0 0 12px;
+    }
+    .story p:last-child { margin-bottom: 0; }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 8px 0;
+      border-bottom: 1px dotted #ccc;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-label { color: #777; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+    .detail-value { text-align: right; color: #111; }
+    .map-frame {
+      width: 100%;
+      height: 200px;
+      border: 1px solid #111;
+      margin-top: 14px;
+      filter: grayscale(100%) contrast(1.05);
+    }
+    .map-placeholder {
+      margin-top: 14px;
+      padding: 20px;
+      border: 1px dashed #bbb;
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+    }
+    .attire-figures {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      margin: 8px 0 14px;
+    }
+    .attire-note {
+      font-size: 13px;
+      text-align: center;
+      color: #333;
+      line-height: 1.6;
+    }
+    .contact-row {
+      font-size: 13px;
+      padding: 6px 0;
+      text-align: center;
+    }
+    .contact-name { font-weight: bold; }
+    .contact-number { color: #555; }
+    .rsvp-by {
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .greeting {
+      font-size: 14px;
+      margin-bottom: 20px;
+      color: #222;
+      text-align: center;
+    }
+    label {
+      display: block;
+      text-align: left;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin: 16px 0 5px;
+      color: #333;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-bottom: 1px solid #999;
+      font-size: 14px;
+      font-family: inherit;
+      background: transparent;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-bottom: 1px solid #111; }
+    textarea { resize: vertical; min-height: 55px; }
+    button {
+      margin-top: 26px;
+      width: 100%;
+      padding: 13px;
+      background: #111;
+      color: #fff;
+      border: none;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.5; cursor: default; }
+    #statusMsg { margin-top: 16px; font-size: 13px; text-align: center; }
+    #guestsGroup, #mealGroup { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <p class="names">Yus <span class="amp">&amp;</span> Dyan</p>
+    <div class="divider"></div>
+    <p class="quote">"Two hearts, one promise &mdash; every love story is beautiful, but ours is our favorite."</p>
+
+    <section class="story">
+      <p class="section-title">Our Story</p>
+      <p>It started with a guitar and a song neither of us can remember the title of anymore &mdash; just the chords, and the way Dyan hummed along like she'd known it her whole life. Yus kept playing that same song every chance he got after that, half hoping she'd walk by again.</p>
+      <p>High school hallways turned into long talks after class. Then came the food trips &mdash; jeepney rides to nowhere in particular, split meals because neither wanted to admit they were low on allowance, and that one carinderia we still can't drive past without pointing and saying "remember that time..."</p>
+      <p>Years passed. The guitar got old, the song got forgotten, but the jamming never really stopped &mdash; it just turned into something quieter. Late-night talks. Shared plates. Showing up, again and again, for the small ordinary days that somehow added up to a whole life together.</p>
+      <p>From one song to a thousand food trips, to forever.</p>
+    </section>
+
+    <section class="event-details">
+      <p class="section-title">Event Details</p>
+      <div class="detail-row">
+        <span class="detail-label">Date</span>
+        <span class="detail-value"><?= weddingDate ?></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Time</span>
+        <span class="detail-value"><?= weddingTime ?></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Venue</span>
+        <span class="detail-value"><?= venueName ?></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Address</span>
+        <span class="detail-value"><?= venueAddress ?></span>
+      </div>
+
+      <? if (venueAddress && venueAddress !== 'To be announced') { ?>
+        <iframe class="map-frame" loading="lazy" src="https://www.google.com/maps?q=<?= encodeURIComponent(venueAddress) ?>&output=embed"></iframe>
+      <? } else { ?>
+        <div class="map-placeholder">Map will appear here once the venue address is added to the Details sheet.</div>
+      <? } ?>
+    </section>
+
+    <section class="instructions">
+      <p class="section-title">Instructions &amp; Attire</p>
+      <div class="attire-figures">
+        <svg width="60" height="120" viewBox="0 0 60 120">
+          <circle cx="30" cy="14" r="10" fill="none" stroke="#111" stroke-width="2"/>
+          <path d="M15 30 Q30 22 45 30 L52 60 L40 65 L36 116 L24 116 L20 65 L8 60 Z" fill="none" stroke="#111" stroke-width="2"/>
+        </svg>
+        <svg width="60" height="120" viewBox="0 0 60 120">
+          <circle cx="30" cy="14" r="10" fill="none" stroke="#111" stroke-width="2"/>
+          <path d="M17 30 L30 38 L43 30 L48 60 L38 58 L38 116 L22 116 L22 58 L12 60 Z" fill="none" stroke="#111" stroke-width="2"/>
+          <line x1="30" y1="38" x2="30" y2="58" stroke="#111" stroke-width="2"/>
+        </svg>
+      </div>
+      <p class="attire-note"><?= attireNotes ?></p>
+    </section>
+
+    <section class="contacts">
+      <p class="section-title">Contacts</p>
+      <? if (contact1Name) { ?>
+        <div class="contact-row"><span class="contact-name"><?= contact1Name ?></span> &mdash; <span class="contact-number"><?= contact1Number ?></span></div>
+      <? } ?>
+      <? if (contact2Name) { ?>
+        <div class="contact-row"><span class="contact-name"><?= contact2Name ?></span> &mdash; <span class="contact-number"><?= contact2Number ?></span></div>
+      <? } ?>
+      <? if (!contact1Name && !contact2Name) { ?>
+        <div class="contact-row">Contact details coming soon.</div>
+      <? } ?>
+    </section>
+
+    <section class="rsvp-section">
+      <p class="section-title">RSVP</p>
+      <p class="rsvp-by">Kindly RSVP before September 28, 2026</p>
+      <p class="greeting" id="greetingText"></p>
+
+      <form id="rsvpForm">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" required>
+
+        <label for="attending">Will you attend?</label>
+        <select id="attending" required>
+          <option value="">Select an option</option>
+          <option value="Yes">Joyfully accepts</option>
+          <option value="No">Regretfully declines</option>
+        </select>
+
+        <div id="guestsGroup">
+          <label for="guests">Number of Guests (Pax)</label>
+          <select id="guests"></select>
+        </div>
+
+        <div id="mealGroup">
+          <label for="meal">Meal Preference</label>
+          <select id="meal">
+            <option value="Chicken">Chicken</option>
+            <option value="Beef">Beef</option>
+            <option value="Vegetarian">Vegetarian</option>
+          </select>
+        </div>
+
+        <label for="message">Message for the couple (optional)</label>
+        <textarea id="message"></textarea>
+
+        <button type="submit" id="submitBtn">Send RSVP</button>
+      </form>
+      <div id="statusMsg"></div>
+    </section>
+  </div>
+
+  <script>
+    const GUEST_NAME = "<?= guestName ?>";
+    const MAX_PAX = <?= maxPax ?>;
+    const GUEST_CODE = "<?= code ?>";
+
+    const greetingText = document.getElementById('greetingText');
+    const nameInput = document.getElementById('name');
+    if (GUEST_NAME) {
+      greetingText.textContent = "Dear " + GUEST_NAME + ", you're invited! You have " + MAX_PAX + " pax reserved.";
+      nameInput.value = GUEST_NAME;
+    } else {
+      greetingText.textContent = "We can't wait to celebrate with you.";
+    }
+
+    const guestsSelect = document.getElementById('guests');
+    for (let i = 1; i <= MAX_PAX; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = i;
+      guestsSelect.appendChild(opt);
+    }
+
+    const attendingEl = document.getElementById('attending');
+    const guestsGroup = document.getElementById('guestsGroup');
+    const mealGroup = document.getElementById('mealGroup');
+
+    attendingEl.addEventListener('change', () => {
+      const isYes = attendingEl.value === 'Yes';
+      guestsGroup.style.display = isYes ? 'block' : 'none';
+      mealGroup.style.display = isYes ? 'block' : 'none';
+    });
+
+    document.getElementById('rsvpForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const statusMsg = document.getElementById('statusMsg');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      const formData = {
+        code: GUEST_CODE,
+        name: nameInput.value,
+        attending: attendingEl.value,
+        guests: guestsGroup.style.display === 'block' ? guestsSelect.value : '',
+        meal: mealGroup.style.display === 'block' ? document.getElementById('meal').value : '',
+        message: document.querySelector('textarea').value
+      };
+
+      google.script.run
+        .withSuccessHandler(function() {
+          statusMsg.style.color = '#111';
+          statusMsg.textContent = 'Thank you! Your RSVP has been recorded.';
+          document.getElementById('rsvpForm').reset();
+          guestsGroup.style.display = 'none';
+          mealGroup.style.display = 'none';
+          btn.disabled = false;
+          btn.textContent = 'Send RSVP';
+        })
+        .withFailureHandler(function(err) {
+          statusMsg.style.color = '#900';
+          statusMsg.textContent = 'Something went wrong. Please try again.';
+          btn.disabled = false;
+          btn.textContent = 'Send RSVP';
+        })
+        .submitRSVP(formData);
+    });
+  </script>
+</body>
+</html>
