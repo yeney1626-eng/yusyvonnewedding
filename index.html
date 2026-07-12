@@ -20,9 +20,10 @@
     --gold-line:#A9884F;
     --white:#FFFDF8;
     --max-w:1080px;
+    --header-h:78px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth; scroll-padding-top:var(--header-h);}
   body{
     background:var(--ivory);
     color:var(--ink);
@@ -30,6 +31,7 @@
     font-size:19px;
     line-height:1.6;
     overflow-x:hidden;
+    padding-top:var(--header-h);
   }
   body::before{
     content:"";
@@ -56,8 +58,8 @@
 
   /* ---------- NAV ---------- */
   header{
-    position:sticky; top:0; z-index:100;
-    background:rgba(245,239,226,0.92);
+    position:fixed; top:0; left:0; right:0; z-index:1000;
+    background:rgba(245,239,226,0.96);
     backdrop-filter:blur(6px);
     border-bottom:1px solid rgba(46,42,34,0.1);
   }
@@ -97,37 +99,34 @@
   }
   .rsvp-pill:hover{background:var(--sage-deep) !important; color:var(--white) !important;}
   .burger{
-    display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px;
+    display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer;
+    padding:12px; margin:-12px; min-width:44px; min-height:44px; align-items:center; justify-content:center;
+    position:relative; z-index:1001;
   }
   .burger span{width:24px; height:2px; background:var(--ink);}
 
   /* ---------- HERO ---------- */
   .hero{
-    padding:70px 28px 90px;
+    padding:90px 28px 100px;
     text-align:center;
     position:relative;
     overflow:hidden;
-  }
-  .hero-photo-wrap{
-    max-width:280px; margin:0 auto 34px; position:relative;
-  }
-  .hero-photo-wrap::before{
-    content:""; position:absolute; inset:-10px;
-    border:1px solid var(--gold-line);
-    z-index:0;
-  }
-  .hero-photo{
-    width:100%; aspect-ratio:1/1; object-fit:cover; object-position:center 25%;
-    border-radius:50%;
-    border:4px solid var(--white);
-    box-shadow:0 10px 30px rgba(46,42,34,0.18);
-    position:relative; z-index:1;
+    background-image:
+      linear-gradient(180deg, rgba(245,239,226,0.55) 0%, rgba(245,239,226,0.75) 55%, rgba(245,239,226,0.92) 100%),
+      url('hero-bg.jpg');
+    background-size:cover;
+    background-position:center 22%;
+    background-repeat:no-repeat;
   }
   .hero-frame{
     max-width:640px; margin:0 auto;
+    background:rgba(255,253,248,0.88);
+    backdrop-filter:blur(3px);
+    -webkit-backdrop-filter:blur(3px);
     border:1px solid rgba(169,136,79,0.45);
     padding:56px 30px;
     position:relative;
+    box-shadow:0 20px 50px rgba(46,42,34,0.15);
   }
   .hero-frame::before, .hero-frame::after{
     content:""; position:absolute; width:34px; height:34px;
@@ -386,18 +385,22 @@
   }
   @media (max-width:720px){
     nav ul{
-      position:fixed; top:64px; left:0; right:0; bottom:0;
+      position:fixed; top:var(--header-h); left:0; right:0; bottom:0;
       background:var(--ivory); flex-direction:column; align-items:flex-start;
       padding:30px 28px; gap:22px;
       transform:translateX(100%); transition:transform .3s ease;
       overflow-y:auto;
+      z-index:999;
     }
     nav ul.open{transform:translateX(0);}
     .burger{display:flex;}
+    nav a{
+      font-size:16px; padding:10px 4px; width:100%;
+    }
     .field-row{grid-template-columns:1fr;}
   }
   @media (max-width:480px){
-    .hero{padding:70px 16px 60px;}
+    .hero{padding:60px 16px 60px; background-position:center 15%;}
     .hero-frame{padding:40px 16px;}
     .section-pad{padding:70px 0;}
     .swatches{gap:16px;}
@@ -428,9 +431,6 @@
 </header>
 
 <section class="hero" id="home">
-  <div class="hero-photo-wrap">
-    <img class="hero-photo" src="couple-photo.jpg" alt="Briel Julius and Dyan Yvonne">
-  </div>
   <div class="hero-frame">
     <div class="eyebrow">We're getting married</div>
     <h1 class="hero-names">Briel Julius<span class="hero-amp">&amp;</span>Dyan Yvonne</h1>
@@ -691,6 +691,15 @@
 </footer>
 
 <script>
+  // Keep the fixed header's height in sync so content/menu never sit under it
+  function syncHeaderHeight(){
+    const h = document.querySelector('header').offsetHeight;
+    document.documentElement.style.setProperty('--header-h', h + 'px');
+  }
+  syncHeaderHeight();
+  window.addEventListener('resize', syncHeaderHeight);
+  window.addEventListener('orientationchange', syncHeaderHeight);
+
   // Mobile nav toggle
   const burgerBtn = document.getElementById('burgerBtn');
   const navList = document.getElementById('navList');
@@ -722,26 +731,60 @@
   setInterval(updateCountdown, 1000);
 
   // RSVP form
-  // Guest list + allotted pax, sourced from the RSVP tracking sheet.
-  // NOTE: the tracking sheet is currently private, so this is placeholder
-  // sample data — replace the entries below with the real guest list
-  // (Name -> Pax) once the sheet is shared or exported.
-  const GUEST_LIST = [
+  // ============================================================
+  // Paste the URL you get after deploying the Apps Script (see the
+  // Code.gs provided separately) as a Web App. It should look like:
+  // https://script.google.com/macros/s/XXXXXXXXXXXX/exec
+  // Until you paste a real URL here, the dropdown falls back to
+  // sample placeholder names so the page still works.
+  // ============================================================
+  const WEBAPP_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+  const FALLBACK_GUESTS = [
     { name: "Sample Guest 1", pax: 2 },
     { name: "Sample Guest 2", pax: 1 },
-    { name: "Sample Family (Guest 3)", pax: 4 },
-    { name: "Not on the list", pax: "To be confirmed" }
+    { name: "Sample Family (Guest 3)", pax: 4 }
   ];
 
   const guestSelect = document.getElementById('guestName');
   const paxInput = document.getElementById('pax');
-  GUEST_LIST.forEach(g => {
-    const opt = document.createElement('option');
-    opt.value = g.name;
-    opt.textContent = g.name;
-    opt.dataset.pax = g.pax;
-    guestSelect.appendChild(opt);
-  });
+
+  function populateGuestDropdown(guests){
+    guests.forEach(g => {
+      const opt = document.createElement('option');
+      opt.value = g.name;
+      opt.textContent = g.name;
+      opt.dataset.pax = g.pax;
+      guestSelect.appendChild(opt);
+    });
+    const notListed = document.createElement('option');
+    notListed.value = "Not on the list";
+    notListed.textContent = "Not on the list";
+    notListed.dataset.pax = "To be confirmed";
+    guestSelect.appendChild(notListed);
+  }
+
+  async function loadGuestList(){
+    guestSelect.disabled = true;
+    guestSelect.innerHTML = '<option value="">Loading guest list…</option>';
+    let guests = FALLBACK_GUESTS;
+    if (WEBAPP_URL && !WEBAPP_URL.startsWith('PASTE_')){
+      try{
+        const res = await fetch(WEBAPP_URL + '?action=guests');
+        const data = await res.json();
+        if (Array.isArray(data.guests) && data.guests.length){
+          guests = data.guests;
+        }
+      }catch(err){
+        console.error('Could not load live guest list, using fallback.', err);
+      }
+    }
+    guestSelect.innerHTML = '<option value="">Select from the guest list</option>';
+    populateGuestDropdown(guests);
+    guestSelect.disabled = false;
+  }
+  loadGuestList();
+
   guestSelect.addEventListener('change', function(){
     const selected = this.options[this.selectedIndex];
     paxInput.value = selected && selected.dataset.pax ? selected.dataset.pax : '';
@@ -751,7 +794,7 @@
   const rsvpConfirm = document.getElementById('rsvpConfirm');
   const GROOM_PHONE = '639270793116';
 
-  rsvpForm.addEventListener('submit', function(e){
+  rsvpForm.addEventListener('submit', async function(e){
     e.preventDefault();
     const name = guestSelect.value;
     const attendance = document.getElementById('attendance').value;
@@ -760,6 +803,19 @@
     const message = document.getElementById('message').value.trim();
     const now = new Date();
     const timestamp = now.toLocaleString('en-PH', { dateStyle:'long', timeStyle:'short' });
+
+    // Send the response straight to the spreadsheet via Apps Script, if connected
+    if (WEBAPP_URL && !WEBAPP_URL.startsWith('PASTE_')){
+      try{
+        await fetch(WEBAPP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ name, attendance, pax, contactNo, message })
+        });
+      }catch(err){
+        console.error('Could not send RSVP to the sheet automatically.', err);
+      }
+    }
 
     const summary =
 `Name: ${name}
