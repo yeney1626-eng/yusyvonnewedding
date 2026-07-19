@@ -261,6 +261,11 @@
   .hero-ctas{
     display:flex; gap:14px; justify-content:center; margin-top:38px; flex-wrap:wrap;
   }
+  .hero-music{
+    position:absolute; width:1px; height:1px; overflow:hidden;
+    clip:rect(0,0,0,0); white-space:nowrap;
+  }
+  .hero-music iframe{border-radius:2px; display:block;}
   .btn{
     font-family:'Jost', sans-serif;
     font-size:13px; letter-spacing:0.1em; text-transform:uppercase;
@@ -560,6 +565,13 @@
     <div class="hero-ctas">
       <a href="#rsvp" class="btn btn-solid">RSVP Now</a>
       <a href="#events" class="btn btn-outline">Event Details</a>
+    </div>
+
+    <div class="hero-music" aria-hidden="true">
+      <iframe id="scPlayer" width="1" height="1" scrolling="no" frameborder="no"
+        allow="autoplay"
+        src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fuymichael%2Fikaw-at-ako-johnoy-danao-cover&color=%23c9a44c&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false&download=false">
+      </iframe>
     </div>
   </div>
 </section>
@@ -1001,5 +1013,32 @@ RSVP Recorded: ${timestamp}`;
   });
 </script>
 
+<script src="https://w.soundcloud.com/player/api.js"></script>
+<script>
+  // Soft background music: starts quietly on the visitor's first tap/click/scroll,
+  // since browsers block audio autoplay until there's been some interaction.
+  (function(){
+    var iframeEl = document.getElementById('scPlayer');
+    if (!iframeEl || typeof SC === 'undefined') return;
+    var widget = SC.Widget(iframeEl);
+    var started = false;
+
+    widget.bind(SC.Widget.Events.READY, function(){
+      widget.setVolume(16); // soft, out of 100
+    });
+
+    function startSoftly(){
+      if (started) return;
+      started = true;
+      widget.play();
+      document.removeEventListener('click', startSoftly);
+      document.removeEventListener('touchstart', startSoftly);
+      document.removeEventListener('scroll', startSoftly);
+    }
+    document.addEventListener('click', startSoftly, { once:true });
+    document.addEventListener('touchstart', startSoftly, { once:true });
+    document.addEventListener('scroll', startSoftly, { once:true, passive:true });
+  })();
+</script>
 </body>
 </html>
