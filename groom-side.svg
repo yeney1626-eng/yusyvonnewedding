@@ -1,0 +1,45 @@
+<svg viewBox="0 0 220 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Groom in a suit, side view, eating isaw skewer">
+  <!-- back leg -->
+  <path d="M132,258 L156,258 L150,410 L128,410 Z" fill="#14161F"/>
+  <rect x="122" y="404" width="34" height="12" rx="5" fill="#0A0B10"/>
+
+  <!-- back arm hanging -->
+  <path d="M100,118 Q84,150 88,195 L102,193 Q100,152 112,122 Z" fill="#1D2030"/>
+  <circle cx="93" cy="198" r="9" fill="#E8B98C"/>
+
+  <!-- torso / jacket -->
+  <path d="M92,110 Q128,96 162,114 L170,258 Q128,274 90,258 Z" fill="#1D2030"/>
+  <!-- shirt sliver -->
+  <path d="M150,112 L162,120 L152,138 L142,120 Z" fill="#F7F2E6"/>
+  <!-- bow tie -->
+  <path d="M143,118 L152,124 L143,130 Z" fill="#B08D52"/>
+  <path d="M161,118 L152,124 L161,130 Z" fill="#B08D52"/>
+  <circle cx="152" cy="124" r="3" fill="#8E6E3A"/>
+
+  <!-- front leg -->
+  <path d="M108,258 L132,258 L138,410 L114,410 Z" fill="#1D2030"/>
+  <rect x="108" y="404" width="34" height="12" rx="5" fill="#0E0F16"/>
+
+  <!-- front arm bent up to mouth -->
+  <path d="M152,118 Q176,128 182,158 Q184,172 178,182 L166,176 Q172,158 160,138 Z" fill="#1D2030"/>
+  <circle cx="176" cy="184" r="9" fill="#E8B98C"/>
+
+  <!-- isaw skewer -->
+  <g stroke-linecap="round">
+    <line x1="180" y1="182" x2="204" y2="166" stroke="#C9A98A" stroke-width="2.5"/>
+    <ellipse cx="190" cy="178" rx="7" ry="4.5" transform="rotate(-32 190 178)" fill="#5C3A24"/>
+    <ellipse cx="199" cy="171" rx="7" ry="4.5" transform="rotate(-32 199 171)" fill="#6B4530"/>
+  </g>
+
+  <!-- neck -->
+  <rect x="120" y="90" width="18" height="20" rx="6" fill="#E8B98C"/>
+  <!-- head -->
+  <circle cx="132" cy="68" r="26" fill="#EFC49A"/>
+  <!-- nose -->
+  <path d="M156,66 Q168,70 158,76 Z" fill="#EFC49A"/>
+  <!-- hair -->
+  <path d="M106,52 Q104,26 134,24 Q156,25 156,44 Q150,34 132,34 Q112,35 108,52 Z" fill="#2B1B11"/>
+
+  <!-- ground shadow -->
+  <ellipse cx="128" cy="422" rx="52" ry="9" fill="#2A1F12" opacity="0.18"/>
+</svg>

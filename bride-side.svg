@@ -1,0 +1,38 @@
+<svg viewBox="0 0 220 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bride in a gown, side view, eating kwekkwek skewer">
+  <!-- veil trailing behind (to the right) -->
+  <path d="M110,60 Q170,90 158,220 Q150,150 118,110 Z" fill="#FFFFFF" opacity="0.55"/>
+
+  <!-- back arm hanging -->
+  <path d="M120,120 Q136,150 132,192 L118,190 Q120,152 108,124 Z" fill="#E4D3A6"/>
+  <circle cx="127" cy="195" r="8" fill="#E8B98C"/>
+
+  <!-- gown -->
+  <path d="M128,112 Q92,98 60,116 L48,262 Q92,286 138,262 Z" fill="#F3E6C6"/>
+  <path d="M128,114 Q94,126 62,116" stroke="#C9A44C" stroke-width="3.5" fill="none"/>
+  <!-- shoe peeking at hem -->
+  <ellipse cx="80" cy="264" rx="13" ry="6" fill="#F3E6C6" stroke="#C9A44C" stroke-width="1"/>
+
+  <!-- front arm bent up to mouth -->
+  <path d="M70,118 Q46,128 40,156 Q38,170 44,180 L56,174 Q50,157 62,138 Z" fill="#F3E6C6"/>
+  <circle cx="46" cy="182" r="8" fill="#E8B98C"/>
+
+  <!-- kwekkwek skewer -->
+  <g stroke-linecap="round">
+    <line x1="42" y1="180" x2="18" y2="164" stroke="#C9A98A" stroke-width="2.5"/>
+    <circle cx="32" cy="176" r="6" fill="#E7A23A"/>
+    <circle cx="23" cy="169" r="6" fill="#D98F2B"/>
+  </g>
+
+  <!-- neck -->
+  <rect x="80" y="90" width="16" height="18" rx="6" fill="#EFC49A"/>
+  <!-- head -->
+  <circle cx="88" cy="68" r="24" fill="#F0C79C"/>
+  <!-- nose -->
+  <path d="M64,66 Q53,70 63,75 Z" fill="#F0C79C"/>
+  <!-- hair bun + updo -->
+  <path d="M112,54 Q114,28 86,26 Q66,27 65,45 Q71,36 88,36 Q106,37 110,54 Z" fill="#3A2415"/>
+  <circle cx="112" cy="42" r="8" fill="#3A2415"/>
+
+  <!-- ground shadow -->
+  <ellipse cx="90" cy="272" rx="54" ry="9" fill="#2A1F12" opacity="0.18"/>
+</svg>
