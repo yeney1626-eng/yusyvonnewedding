@@ -366,6 +366,23 @@
     clip:rect(0,0,0,0); white-space:nowrap;
   }
   .hero-music iframe{border-radius:2px; display:block;}
+  .music-toggle{
+    position:fixed; right:18px; bottom:18px; z-index:900;
+    width:46px; height:46px; border-radius:50%;
+    background:rgba(var(--panel-rgb),0.9);
+    border:1px solid var(--gold-line);
+    color:var(--gold-line);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:18px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.35);
+    transition:transform .25s ease, opacity .25s ease;
+  }
+  .music-toggle:active{transform:scale(0.92);}
+  .music-toggle.playing{animation:musicSpin 3.5s linear infinite;}
+  @keyframes musicSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  @media (max-width:640px){
+    .music-toggle{right:14px; bottom:14px; width:42px; height:42px; font-size:16px;}
+  }
   .btn{
     font-family:'Jost', sans-serif;
     font-size:13px; letter-spacing:0.1em; text-transform:uppercase;
@@ -634,6 +651,8 @@
   </div>
   <div class="envelope-hint">Tap the envelope to open</div>
 </div>
+
+<button type="button" class="music-toggle" id="musicToggle" aria-label="Play background music" title="Play music">♪</button>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -1460,36 +1479,55 @@ RSVP Recorded: ${timestamp}`;
 
 <script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
-  // Background music: starts the moment the visitor opens the envelope —
-  // a real tap/click, so it satisfies both desktop and mobile autoplay rules.
+  // Background music. Mobile browsers routinely block autoplay for cross-origin
+  // iframes even from a proxied gesture, so the floating note button is the
+  // reliable primary control — a direct tap on it always works.
   var __scWidget = null;
   var __scReady = false;
-  var __scStarted = false;
-  var __scBaseSrc = "https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fuymichael%2Fikaw-at-ako-johnoy-danao-cover&color=%23c9a44c&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false&download=false";
+  var __scPlaying = false;
+  var __scWantsPlay = false;
   (function(){
     var iframeEl = document.getElementById('scPlayer');
     if (!iframeEl || typeof SC === 'undefined') return;
     __scWidget = SC.Widget(iframeEl);
     __scWidget.bind(SC.Widget.Events.READY, function(){
       __scReady = true;
-      __scWidget.setVolume(45); // louder, out of 100
-      if (__scStarted) __scWidget.play();
+      __scWidget.setVolume(38);
+      if (__scWantsPlay) __scWidget.play();
     });
   })();
 
-  function __startBackgroundMusic(){
-    if (__scStarted) return;
-    __scStarted = true;
-    // iOS Safari often ignores a postMessage play() call after the fact, but honors
-    // autoplay when the iframe itself loads with auto_play=true inside a real tap —
-    // so we force a fresh load here, synchronously inside the click handler.
-    var iframeEl = document.getElementById('scPlayer');
-    if (iframeEl) iframeEl.src = __scBaseSrc;
-    if (__scReady && __scWidget) __scWidget.play();
+  function __setMusicUI(playing){
+    var btn = document.getElementById('musicToggle');
+    if (!btn) return;
+    btn.classList.toggle('playing', playing);
+    btn.textContent = playing ? '♫' : '♪';
+    btn.setAttribute('aria-label', playing ? 'Pause background music' : 'Play background music');
+    btn.title = playing ? 'Pause music' : 'Play music';
   }
-  // Fallback in case the envelope is skipped/missing: start on first interaction anyway
+
+  function __startBackgroundMusic(){
+    if (__scPlaying) return;
+    __scPlaying = true;
+    __scWantsPlay = true;
+    if (__scReady && __scWidget) __scWidget.play();
+    __setMusicUI(true);
+  }
+  function __pauseBackgroundMusic(){
+    __scPlaying = false;
+    __scWantsPlay = false;
+    if (__scReady && __scWidget) __scWidget.pause();
+    __setMusicUI(false);
+  }
+
+  document.getElementById('musicToggle').addEventListener('click', function(){
+    if (__scPlaying) { __pauseBackgroundMusic(); } else { __startBackgroundMusic(); }
+  });
+  // Bonus: try to start automatically on the envelope tap too — works on many
+  // desktop browsers, harmless no-op where mobile blocks it (button still works).
   document.addEventListener('click', __startBackgroundMusic, { once:true });
   document.addEventListener('touchstart', __startBackgroundMusic, { once:true });
+
 
   // Envelope intro: locks scroll, opens on tap, then reveals the site
   (function(){
