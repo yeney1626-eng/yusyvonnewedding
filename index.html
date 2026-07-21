@@ -1460,30 +1460,30 @@ RSVP Recorded: ${timestamp}`;
 
 <script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
-  // Soft background music: starts quietly on the visitor's first tap/click/scroll,
-  // since browsers block audio autoplay until there's been some interaction.
+  // Background music: starts the moment the visitor opens the envelope —
+  // a real tap/click, so it satisfies both desktop and mobile autoplay rules.
+  var __scWidget = null;
+  var __scReady = false;
+  var __scStarted = false;
   (function(){
     var iframeEl = document.getElementById('scPlayer');
     if (!iframeEl || typeof SC === 'undefined') return;
-    var widget = SC.Widget(iframeEl);
-    var started = false;
-
-    widget.bind(SC.Widget.Events.READY, function(){
-      widget.setVolume(16); // soft, out of 100
+    __scWidget = SC.Widget(iframeEl);
+    __scWidget.bind(SC.Widget.Events.READY, function(){
+      __scReady = true;
+      __scWidget.setVolume(45); // louder, out of 100
+      if (__scStarted) __scWidget.play();
     });
-
-    function startSoftly(){
-      if (started) return;
-      started = true;
-      widget.play();
-      document.removeEventListener('click', startSoftly);
-      document.removeEventListener('touchstart', startSoftly);
-      document.removeEventListener('scroll', startSoftly);
-    }
-    document.addEventListener('click', startSoftly, { once:true });
-    document.addEventListener('touchstart', startSoftly, { once:true });
-    document.addEventListener('scroll', startSoftly, { once:true, passive:true });
   })();
+
+  function __startBackgroundMusic(){
+    if (__scStarted) return;
+    __scStarted = true;
+    if (__scReady && __scWidget) __scWidget.play();
+  }
+  // Fallback in case the envelope is skipped/missing: start on first interaction anyway
+  document.addEventListener('click', __startBackgroundMusic, { once:true });
+  document.addEventListener('touchstart', __startBackgroundMusic, { once:true });
 
   // Envelope intro: locks scroll, opens on tap, then reveals the site
   (function(){
@@ -1496,6 +1496,7 @@ RSVP Recorded: ${timestamp}`;
     function openEnvelope(){
       if (intro.classList.contains('open')) return;
       intro.classList.add('open');
+      __startBackgroundMusic();
       setTimeout(function(){
         intro.classList.add('hide');
         htmlEl.style.overflow = prevOverflow;
