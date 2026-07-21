@@ -1465,6 +1465,7 @@ RSVP Recorded: ${timestamp}`;
   var __scWidget = null;
   var __scReady = false;
   var __scStarted = false;
+  var __scBaseSrc = "https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fuymichael%2Fikaw-at-ako-johnoy-danao-cover&color=%23c9a44c&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false&download=false";
   (function(){
     var iframeEl = document.getElementById('scPlayer');
     if (!iframeEl || typeof SC === 'undefined') return;
@@ -1479,6 +1480,11 @@ RSVP Recorded: ${timestamp}`;
   function __startBackgroundMusic(){
     if (__scStarted) return;
     __scStarted = true;
+    // iOS Safari often ignores a postMessage play() call after the fact, but honors
+    // autoplay when the iframe itself loads with auto_play=true inside a real tap —
+    // so we force a fresh load here, synchronously inside the click handler.
+    var iframeEl = document.getElementById('scPlayer');
+    if (iframeEl) iframeEl.src = __scBaseSrc;
     if (__scReady && __scWidget) __scWidget.play();
   }
   // Fallback in case the envelope is skipped/missing: start on first interaction anyway
