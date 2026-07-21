@@ -97,6 +97,87 @@
     text-transform:uppercase;
     color:var(--sage-deep);
   }
+
+  /* ===== Envelope intro ===== */
+  .envelope-intro{
+    position:fixed; inset:0; z-index:3000;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 50% 40%, #22263380, #0e0f16 75%), #14161F;
+    cursor:pointer;
+    transition:opacity .7s ease, visibility .7s ease;
+  }
+  .envelope-intro.hide{opacity:0; visibility:hidden; pointer-events:none;}
+  .envelope-hint{
+    position:absolute; bottom:8%; left:0; right:0; text-align:center;
+    font-family:'Jost',sans-serif; font-size:11px; letter-spacing:0.22em;
+    text-transform:uppercase; color:#C6BFA6; opacity:0.75;
+    animation:envPulse 2.2s ease-in-out infinite;
+  }
+  @keyframes envPulse{0%,100%{opacity:0.4;}50%{opacity:0.9;}}
+  .envelope-scene{perspective:1800px; width:min(84vw,420px);}
+  .envelope{position:relative; width:100%; aspect-ratio:3/2;}
+  .env-back{
+    position:absolute; inset:0;
+    background:linear-gradient(160deg,#EDE0C8,#E3D3AC);
+    border:1px solid rgba(184,147,79,0.55);
+    box-shadow:0 25px 60px rgba(0,0,0,0.5);
+  }
+  .env-front{
+    position:absolute; left:0; right:0; bottom:0; height:64%;
+    background:linear-gradient(180deg,#F6EFE1,#EFE3C6);
+    border:1px solid rgba(184,147,79,0.55); border-top:none;
+    clip-path:polygon(0 100%, 0 20%, 50% 48%, 100% 20%, 100% 100%);
+    z-index:3;
+  }
+  .env-flap{
+    position:absolute; top:0; left:0; right:0; height:58%;
+    background:linear-gradient(200deg,#EAD9AC,#DEC488);
+    border:1px solid rgba(184,147,79,0.55);
+    clip-path:polygon(0 0, 100% 0, 50% 84%);
+    transform-origin:top center; transform-style:preserve-3d;
+    transition:transform 1s cubic-bezier(.6,.05,.2,1);
+    z-index:4;
+  }
+  .envelope-intro.open .env-flap{transform:rotateX(180deg); z-index:1;}
+  .env-letter{
+    position:absolute; left:7%; right:7%; top:10%; height:82%;
+    background:rgba(var(--panel-rgb),0.97);
+    border:1px solid rgba(184,147,79,0.5);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:14px 12px;
+    transform:translateY(4%);
+    transition:transform 1s cubic-bezier(.6,.05,.2,1) .12s;
+    z-index:2; box-shadow:0 10px 26px rgba(0,0,0,0.3);
+  }
+  .envelope-intro.open .env-letter{transform:translateY(-86%);}
+  .env-eyebrow{
+    font-family:'Jost',sans-serif; font-size:10px; letter-spacing:0.28em;
+    text-transform:uppercase; color:var(--gold-line); margin-bottom:10px;
+  }
+  .env-names{
+    font-family:'Beau Rivage', cursive; font-size:clamp(28px,7vw,40px);
+    color:var(--ink); line-height:1.05;
+  }
+  .env-names span{color:var(--gold-line); margin:0 6px; font-size:0.7em;}
+  .env-date{
+    font-family:'Jost',sans-serif; font-size:11px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--ink-soft); margin-top:12px;
+  }
+  .env-seal{
+    position:absolute; top:58%; left:50%; transform:translate(-50%,-50%);
+    width:58px; height:58px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #D8B36A, #A9884F);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Jost',sans-serif; font-size:10px; letter-spacing:0.04em;
+    color:#14161F; font-weight:600; z-index:5;
+    box-shadow:0 4px 10px rgba(0,0,0,0.4);
+    transition:opacity .5s ease, transform .5s ease;
+  }
+  .envelope-intro.open .env-seal{opacity:0; transform:translate(-50%,-50%) scale(0.4);}
+  @media (max-width:480px){
+    .env-names{font-size:clamp(24px,8vw,32px);}
+    .env-seal{width:48px; height:48px; font-size:9px;}
+  }
   a{color:inherit;}
   img{max-width:100%; display:block;}
   .wrap{max-width:var(--max-w); margin:0 auto; padding:0 28px;}
@@ -536,6 +617,23 @@
 </style>
 </head>
 <body>
+
+<div class="envelope-intro" id="envelopeIntro">
+  <div class="envelope-scene">
+    <div class="envelope">
+      <div class="env-back"></div>
+      <div class="env-letter">
+        <div class="env-eyebrow">Save the Date</div>
+        <div class="env-names">Briel Julius<span>&amp;</span>Dyan Yvonne</div>
+        <div class="env-date">Tap to open your invitation</div>
+      </div>
+      <div class="env-front"></div>
+      <div class="env-flap"></div>
+      <div class="env-seal">BJ&amp;DY</div>
+    </div>
+  </div>
+  <div class="envelope-hint">Tap the envelope to open</div>
+</div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -1385,6 +1483,34 @@ RSVP Recorded: ${timestamp}`;
     document.addEventListener('click', startSoftly, { once:true });
     document.addEventListener('touchstart', startSoftly, { once:true });
     document.addEventListener('scroll', startSoftly, { once:true, passive:true });
+  })();
+
+  // Envelope intro: locks scroll, opens on tap, then reveals the site
+  (function(){
+    var intro = document.getElementById('envelopeIntro');
+    if (!intro) return;
+    var htmlEl = document.documentElement;
+    var prevOverflow = htmlEl.style.overflow;
+    htmlEl.style.overflow = 'hidden';
+
+    function openEnvelope(){
+      if (intro.classList.contains('open')) return;
+      intro.classList.add('open');
+      setTimeout(function(){
+        intro.classList.add('hide');
+        htmlEl.style.overflow = prevOverflow;
+      }, 950);
+      setTimeout(function(){
+        intro.style.display = 'none';
+      }, 1700);
+    }
+    intro.addEventListener('click', openEnvelope);
+    intro.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ') openEnvelope();
+    });
+    intro.setAttribute('tabindex', '0');
+    intro.setAttribute('role', 'button');
+    intro.setAttribute('aria-label', 'Open the Save the Date envelope');
   })();
 </script>
 </body>
